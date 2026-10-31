@@ -38,6 +38,7 @@ WUNSCH_VORSCHLAEGE = {  # Beschriftung des Knopfs: Text, der ins Feld übernomme
     "Küche: sechs statt vier Steckdosen": "In der Küche sechs statt vier Steckdosen.",
     "Bad: noch eine Steckdose": "Im Bad noch eine Steckdose neben dem Spiegel."}
 HAND = "Von Hand bearbeitet"
+PROJEKTSEITE = "https://sayamrina.github.io/wunschplan/"
 
 st.set_page_config(page_title="Wunschplan", page_icon="🔌", layout="wide")
 st.markdown("""
@@ -248,6 +249,32 @@ st.markdown(f"""<div class="appbar"><div class="marke"><svg width="26" height="2
 <div class="titel">Vom Kundengespräch zum Angebot.</div>
 <p class="lead">Notizen rein, Plan und Angebot raus. Will der Kunde später etwas anders haben, trägst du es als neue Version ein
 und siehst sofort, was sich ändert und was es kostet.</p>""", unsafe_allow_html=True)
+
+
+@st.dialog("So funktioniert die App", width="large")
+def anleitung():
+    st.markdown("""
+1. **Notizen.** Schreib auf oder sprich ein, was der Kunde in welchem Raum haben möchte, oder lade ein Beispiel.
+   Dann auf „Plan erstellen“ klicken.
+2. **Plan prüfen.** Der Plan zeigt jeden Raum mit seinen Symbolen. Mit − und + änderst du Anzahlen, unter „+ Raum“
+   legst du weitere Räume an. Die Prüfung weist auf Lücken hin, etwa einen fehlenden Rauchmelder; den Vorschlag
+   übernimmst du mit einem Klick.
+3. **Angebot.** Material und Montage je Position, mit MwSt. Kunde und Stundensatz anpassen, dann als PDF oder CSV
+   herunterladen.
+4. **Änderungen.** Schreib den Änderungswunsch so, wie der Kunde ihn sagt. Er wird als neue Version eingetragen:
+   im Plan ist Neues grün und Entfallenes rot gestrichelt, im Angebot steht die Preisdifferenz.
+
+**Wer macht was?** Das Sprachmodell versteht die Notizen, auch mit Kürzeln und Tippfehlern, und darf nur Räume und
+Komponenten aus dem Katalog wählen. Preise, Prüfregeln und Versionen rechnet der Code. Ohne API-Schlüssel arbeitet
+die App mit Regeln.
+""")
+    st.link_button("Zur Projektseite", PROJEKTSEITE, icon=":material/open_in_new:")
+
+
+c_hilfe, c_seite, _ = st.columns([2, 2, 5])
+if c_hilfe.button("So funktioniert die App", icon=":material/help:", use_container_width=True):
+    anleitung()
+c_seite.link_button("Projektseite", PROJEKTSEITE, icon=":material/open_in_new:", use_container_width=True)
 
 # 1 Notizen
 st.markdown('<div class="abschnitt" id="s-notizen"><span class="nr">1</span><h2>Notizen</h2></div>'

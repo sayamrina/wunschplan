@@ -133,12 +133,13 @@ def _raum(r: dict, x: float, y: float, b: float, h: float) -> str:
 
     n = len(r["unten"])
     schritt = (b - 60) / max(n, 1)
-    out += gruppe(r["unten"], [(x + 44 + i * schritt + schritt / 2 - 14, y + h) for i in range(n)])
-    out += gruppe(r["links"], [(x, y + h - 30 - i * 30) for i in range(len(r["links"]))])
-    out += gruppe(r["rechts"], [(x + b - 12, y + 60 + i * 32) for i in range(len(r["rechts"]))])
+    sym = gruppe(r["unten"], [(x + 44 + i * schritt + schritt / 2 - 14, y + h) for i in range(n)])
+    sym += gruppe(r["links"], [(x, y + h - 30 - i * 30) for i in range(len(r["links"]))])
+    sym += gruppe(r["rechts"], [(x + b - 12, y + 60 + i * 32) for i in range(len(r["rechts"]))])
     m = len(r["mitte"])
-    out += gruppe(r["mitte"], [(x + b / 2 + (i - (m - 1) / 2) * 30, y + h / 2 + 4) for i in range(m)])
-    out += gruppe(r["oben"], [(x + b - 22 - i * 26, y + 22) for i in range(len(r["oben"]))])
+    sym += gruppe(r["mitte"], [(x + b / 2 + (i - (m - 1) / 2) * 30, y + h / 2 + 4) for i in range(m)])
+    sym += gruppe(r["oben"], [(x + b - 22 - i * 26, y + 22) for i in range(len(r["oben"]))])
+    out.append(f'<g class="symbole" data-raum="{r["raum"]}">{"".join(sym)}</g>')  # je Raum gruppiert, z. B. für Animationen
     ueber = [f"{escape(KOMPONENTEN[k][0])} ×{max(a, n_)}" for k, a, n_ in r["e"] if max(a, n_) > MAX_SYMBOLE]
     if ueber:
         out.append(f'<text x="{x + 14}" y="{y + h - 40}" font-size="11" fill="{TINTE}">{"; ".join(ueber)}</text>')

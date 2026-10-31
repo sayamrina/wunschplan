@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="de" data-lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wunschplan: vom Kundengespräch zum Angebot</title>
+<meta name="description" content="Wunschplan macht aus Notizen eines Kundengesprächs Positionen, einen Installationsplan und ein Angebot. Änderungswünsche werden zu Versionen. Projekt von Amrina.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --grund: #F1F0EE; --flaeche: #FFFFFF; --tinte: #17171C; --rot: #FD2950; --rot-dunkel: #D81B3E; --linie: #D6D4D0;
+  --grau: #5D6C7B; --text2: #3A3F46; --neu: #12A150; --markierung: rgba(253, 41, 80, .14);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --grund: #16161A; --flaeche: #202026; --tinte: #F1F0EE; --linie: #3A3A42; --grau: #A3ADB8;
+    --text2: #C9CDD3; --markierung: rgba(253, 41, 80, .28); }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--grund); color: var(--tinte); font: 400 1.0625rem/1.6 'IBM Plex Sans', Arial, sans-serif; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--rot); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+[lang="en"]:not(html), html[data-lang="en"] [lang="de"]:not(html) { display: none; }
+html[data-lang="en"] [lang="en"]:not(html) { display: revert; }
+
+/* Kopf */
+.kopf { background: var(--rot); color: #fff; }
+.kopf .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 60px; flex-wrap: wrap; }
+.marke { display: flex; align-items: center; gap: .55rem; font-weight: 700; font-size: 1.2rem; text-decoration: none; }
+.kopf nav { display: flex; align-items: center; gap: .2rem 1.1rem; flex-wrap: wrap; font-size: .95rem; }
+.kopf nav a { text-decoration: none; padding: .2rem 0; border-bottom: 1.5px solid transparent; }
+.kopf nav a:hover { border-bottom-color: #fff; }
+.sprache { display: inline-flex; border: 1.5px solid #fff; border-radius: 999px; overflow: hidden; }
+.sprache button { background: transparent; color: #fff; border: 0; font: 600 .82rem 'IBM Plex Sans', sans-serif; padding: .25rem .65rem; cursor: pointer; }
+.sprache button[aria-pressed="true"] { background: #fff; color: var(--rot-dunkel); }
+.banner { background: #17171C; color: #F1F0EE; font-size: .9rem; }
+.banner .wrap { padding-top: .5rem; padding-bottom: .5rem; }
+.banner a { color: #FFB3C1; }
+
+/* Einstieg */
+.einstieg { padding: 3.2rem 0 2.4rem; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 2.4rem; align-items: start; }
+h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.03; margin: 0 0 1rem; font-weight: 700; letter-spacing: -.01em; }
+.lead { font-size: 1.15rem; color: var(--text2); margin: 0 0 1.4rem; max-width: 34ch; }
+.knoepfe { display: flex; gap: .7rem; flex-wrap: wrap; }
+.knopf { display: inline-block; padding: .7rem 1.15rem; border-radius: 10px; font-weight: 600; text-decoration: none; border: 1.5px solid var(--tinte); }
+.knopf.voll { background: var(--rot); border-color: var(--rot); color: #fff; }
+.knopf.voll:hover { background: var(--rot-dunkel); border-color: var(--rot-dunkel); }
+.knopf:not(.voll):hover { background: var(--flaeche); }
+
+.vorfuehrung { background: var(--flaeche); border: 1px solid var(--linie); border-radius: 14px; padding: 1.1rem 1.1rem 1rem; }
+.zettel { margin: 0 0 1rem; padding: 0; list-style: none; font-size: .98rem; }
+.zettel li { padding: .35rem .5rem; border-radius: 6px; border-left: 3px solid transparent; transition: background .4s, border-color .4s; color: var(--text2); }
+.zettel li.an { background: var(--markierung); border-left-color: var(--rot); color: var(--tinte); }
+.zettel-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; font-size: .82rem; color: var(--grau); margin-bottom: .35rem; }
+.zettel-kopf button { background: none; border: 0; color: var(--grau); font: 500 .82rem 'IBM Plex Sans', sans-serif; cursor: pointer; text-decoration: underline; padding: 0; }
+.plan { background: #fff; border-radius: 8px; padding: 6px; }
+.plan svg { display: block; width: 100%; height: auto; }
+.plan .symbole { transition: opacity .5s ease, transform .5s ease; transform-box: fill-box; }
+.js .plan .symbole { opacity: 0; transform: translateY(6px); }
+.js .plan .symbole.an { opacity: 1; transform: none; }
+.ergebnis { font-size: .86rem; color: var(--grau); margin: .55rem 0 0; }
+
+/* Schraffur als Trenner, wie eine geschnittene Wand */
+.schraffur { height: 16px; border-top: 1.5px solid var(--tinte); border-bottom: 1.5px solid var(--tinte); opacity: .5;
+  background: repeating-linear-gradient(45deg, var(--tinte) 0 1.4px, transparent 1.4px 7px); }
+section.wrap { padding-top: 3rem; padding-bottom: 3rem; scroll-margin-top: 1rem; }
+h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); line-height: 1.15; margin: 0 0 1rem; }
+h3 { font-size: 1.2rem; margin: 0 0 .4rem; }
+.text { max-width: 66ch; color: var(--text2); }
+.text p { margin: 0 0 1rem; }
+
+/* Problem: vier Arbeitsschritte nach dem Termin */
+.nacharbeit { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 1.6rem; border-top: 1.5px solid var(--tinte); }
+.nacharbeit div { padding: 1rem 1rem 0 0; }
+.nacharbeit div + div { padding-left: 1rem; border-left: 1px solid var(--linie); }
+.nacharbeit b { display: block; font-size: 1.05rem; margin-bottom: .2rem; }
+.nacharbeit span { color: var(--grau); font-size: .95rem; }
+
+/* Anleitung */
+.schritte { list-style: none; margin: 1.6rem 0 0; padding: 0; counter-reset: s; }
+.schritte > li { counter-increment: s; display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 2rem; padding: 2rem 0;
+  border-top: 1px solid var(--linie); align-items: start; }
+.schritte > li::before { content: counter(s); grid-column: 1; grid-row: 1; color: var(--rot); font-weight: 700; font-size: 2.4rem; line-height: 1; }
+.schritte .was { grid-column: 1; grid-row: 1; padding-top: 3.2rem; }
+.schritte .was p { margin: 0 0 .6rem; color: var(--text2); }
+.schritte figure { grid-column: 2; grid-row: 1; margin: 0; }
+.schritte img { width: 100%; height: auto; display: block; border: 1px solid var(--linie); border-radius: 10px; background: #fff; }
+.schritte img[src*="angebot"] { width: auto; max-width: 100%; max-height: 640px; }
+.schritte figcaption { font-size: .85rem; color: var(--grau); margin-top: .4rem; }
+
+/* Wer macht was */
+.fluss { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; gap: .6rem; margin: 1.6rem 0 0; }
+.fluss .feld { background: var(--flaeche); border: 1.5px solid var(--tinte); border-radius: 12px; padding: 1rem 1.1rem; }
+.fluss .feld.modell { border-color: var(--rot); }
+.fluss .feld h3 { font-size: 1.05rem; }
+.fluss .feld p, .fluss .feld ul { margin: 0; font-size: .95rem; color: var(--text2); }
+.fluss .feld ul { padding-left: 1.1rem; }
+.fluss .pfeil { align-self: center; font-size: 1.6rem; color: var(--grau); }
+.fluss code { font-size: .88em; background: var(--grund); padding: .05rem .3rem; border-radius: 4px; }
+
+/* Auswertung */
+table { width: 100%; border-collapse: collapse; margin: 1.4rem 0 1rem; font-variant-numeric: tabular-nums; background: var(--flaeche); }
+th, td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--linie); vertical-align: top; }
+th { border-bottom: 1.5px solid var(--tinte); font-weight: 600; }
+td.zahl { white-space: nowrap; }
+tr.grenze td { background: var(--markierung); }
+.tabelle { overflow-x: auto; }
+
+.grenzen { columns: 2 22rem; column-gap: 2.4rem; padding-left: 1.1rem; color: var(--text2); }
+.grenzen li { margin-bottom: .6rem; break-inside: avoid; }
+
+footer { border-top: 1.5px solid var(--tinte); padding: 2rem 0 3rem; font-size: .95rem; color: var(--text2); }
+footer .wrap { display: flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+footer p { margin: 0 0 .4rem; }
+
+@media (max-width: 860px) {
+  .einstieg { grid-template-columns: 1fr; padding-top: 2.2rem; }
+  .lead { max-width: none; }
+  .nacharbeit { grid-template-columns: 1fr 1fr; }
+  .nacharbeit div:nth-child(3) { padding-left: 0; border-left: 0; }
+  .schritte > li { grid-template-columns: 1fr; gap: 1rem; }
+  .schritte .was { padding-top: 3rem; }
+  .schritte figure { grid-column: 1; grid-row: 2; }
+  .fluss { grid-template-columns: 1fr; }
+  .fluss .pfeil { transform: rotate(90deg); justify-self: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .plan .symbole, .zettel li { transition: none; }
+}
+</style>
+</head>
+<body>
+<header class="kopf">
+  <div class="wrap">
+    <a class="marke" href="#">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect width="26" height="26" rx="6" fill="#fff"/><path d="M6 15 A7 7 0 0 1 20 15 Z" fill="none" stroke="#FD2950" stroke-width="2.2"/><line x1="13" y1="8" x2="13" y2="4.5" stroke="#FD2950" stroke-width="2.2" stroke-linecap="round"/><line x1="4" y1="19.5" x2="22" y2="19.5" stroke="#17171C" stroke-width="2.2" stroke-linecap="round"/></svg>
+      Wunschplan
+    </a>
+    <nav aria-label="Seiteninhalt">
+      <a href="#anleitung"><span lang="de">Anleitung</span><span lang="en">How it works</span></a>
+      <a href="#auswertung"><span lang="de">Auswertung</span><span lang="en">Evaluation</span></a>
+      <a href="https://github.com/sayamrina/wunschplan">Code</a>
+      <span class="sprache" role="group" aria-label="Sprache / Language">
+        <button type="button" data-set-lang="de" aria-pressed="true">DE</button>
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      </span>
+    </nav>
+  </div>
+</header>
+<div class="banner"><div class="wrap">This website was developed by Amrina as part of a portfolio. <a href="https://sayamrina.github.io/" target="_blank" rel="noopener">View the portfolio →</a></div></div>
+
+<main>
+<div class="wrap einstieg">
+  <div>
+    <h1><span lang="de">Vom Kundengespräch zum Angebot.</span><span lang="en">From the customer meeting to the quote.</span></h1>
+    <p class="lead" lang="de">Die Elektrofachkraft notiert im Gespräch, was der Kunde in welchem Raum haben möchte. Wunschplan macht daraus Positionen, einen Installationsplan und ein Angebot. Will der Kunde später etwas anders haben, wird daraus eine neue Version mit Preisdifferenz.</p>
+    <p class="lead" lang="en">During the visit, the electrician notes what the customer wants in which room. Wunschplan turns those notes into line items, an installation plan and a quote. When the customer changes their mind later, the change becomes a new version with the price difference.</p>
+    <div class="knoepfe">
+      <a class="knopf voll" href="https://wunschplan.streamlit.app/"><span lang="de">App öffnen</span><span lang="en">Open the app</span></a>
+      <a class="knopf" href="#anleitung"><span lang="de">So funktioniert die App</span><span lang="en">How the app works</span></a>
+    </div>
+  </div>
+
+  <div class="vorfuehrung" aria-label="Beispiel: drei Sätze aus dem Kundengespräch werden zu Symbolen im Plan">
+    <div class="zettel-kopf">
+      <span lang="de">Notizen aus dem Gespräch</span><span lang="en">Notes from the meeting (in German, as on site)</span>
+      <button type="button" id="nochmal"><span lang="de">Nochmal abspielen</span><span lang="en">Play again</span></button>
+    </div>
+    <ol class="zettel" id="zettel">
+      <li data-raum="schlafzimmer">Im Schlafzimmer links und rechts vom Bett je eine Doppelsteckdose, dazu eine Deckenleuchte, die man an der Tür und am Bett schalten kann.</li>
+      <li data-raum="kinderzimmer">Kinderzimmer: zwei Doppelsteckdosen, eine Netzwerkdose am Schreibtisch und ein Rauchmelder.</li>
+      <li data-raum="bad">Bad mit Spiegelleuchte, Deckenlicht mit Schalter und einer Doppelsteckdose neben dem Spiegel.</li>
+    </ol>
+    <div class="plan"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 188" width="100%" role="img" aria-label="Plan mit Schlafzimmer, Kinderzimmer und Bad" font-family="IBM Plex Sans, Arial, sans-serif"><defs><pattern id="schraffur" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#FFFFFF"/><line x1="0" y1="0" x2="0" y2="7" stroke="#17171C" stroke-width="1.6"/></pattern></defs><rect x="0" y="0" width="960" height="188" fill="url(#schraffur)" stroke="#17171C" stroke-width="2"/><rect x="14" y="14" width="304.66666666666663" height="160" fill="#FFFFFF" stroke="#17171C" stroke-width="1.5"/><rect x="30" y="4" width="34" height="11" fill="#FFFFFF"/><path d="M30,14 L30,48 A34,34 0 0 0 64,14" fill="none" stroke="#17171C" stroke-width="1" stroke-dasharray="2 2"/><text x="76" y="38" font-size="15" font-weight="600" fill="#17171C">Schlafzimmer</text><g class="symbole" data-raum="schlafzimmer"><g><title>Schuko-Steckdose, zweifach</title><path d="M94.16666666666666,174 A11,11 0 0 1 116.16666666666666,174 Z" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="105.16666666666666" y1="163" x2="105.16666666666666" y2="156" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="109.66666666666666" y1="154" x2="112.66666666666666" y2="149" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="114.66666666666666" y1="154" x2="117.66666666666666" y2="149" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g><g><title>Schuko-Steckdose, zweifach</title><path d="M216.49999999999997,174 A11,11 0 0 1 238.49999999999997,174 Z" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="227.49999999999997" y1="163" x2="227.49999999999997" y2="156" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="231.99999999999997" y1="154" x2="234.99999999999997" y2="149" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="236.99999999999997" y1="154" x2="239.99999999999997" y2="149" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g><g><title>Wechselschalter</title><circle cx="14" cy="144" r="5.5" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="18" y1="140" x2="28" y2="132" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="18" y1="148" x2="28" y2="156" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g><g><title>Wechselschalter</title><circle cx="14" cy="114" r="5.5" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="18" y1="110" x2="28" y2="102" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="18" y1="118" x2="28" y2="126" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g><g><title>Deckenauslass für Leuchte</title><circle cx="166.33333333333331" cy="98.0" r="10" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="159.33333333333331" y1="91.0" x2="173.33333333333331" y2="105.0" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="159.33333333333331" y1="105.0" x2="173.33333333333331" y2="91.0" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g></g><rect x="327.66666666666663" y="14" width="304.66666666666663" height="160" fill="#FFFFFF" stroke="#17171C" stroke-width="1.5"/><rect x="343.66666666666663" y="4" width="34" height="11" fill="#FFFFFF"/><path d="M343.66666666666663,14 L343.66666666666663,48 A34,34 0 0 0 377.66666666666663,14" fill="none" stroke="#17171C" stroke-width="1" stroke-dasharray="2 2"/><text x="389.66666666666663" y="38" font-size="15" font-weight="600" fill="#17171C">Kinderzimmer</text><g class="symbole" data-raum="kinderzimmer"><g><title>Schuko-Steckdose, zweifach</title><path d="M387.4444444444444,174 A11,11 0 0 1 409.4444444444444,174 Z" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="398.4444444444444" y1="163" x2="398.4444444444444" y2="156" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="402.9444444444444" y1="154" x2="405.9444444444444" y2="149" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="407.9444444444444" y1="154" x2="410.9444444444444" y2="149" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g><g><title>Schuko-Steckdose, zweifach</title><path d="M468.99999999999994,174 A11,11 0 0 1 490.99999999999994,174 Z" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="479.99999999999994" y1="163" x2="479.99999999999994" y2="156" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="484.49999999999994" y1="154" x2="487.49999999999994" y2="149" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="489.49999999999994" y1="154" x2="492.49999999999994" y2="149" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g><g><title>Netzwerkdose Cat.6, zweifach</title><rect x="550.5555555555554" y="154" width="22" height="20" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><text x="561.5555555555554" y="168" text-anchor="middle" font-size="10" font-weight="600" fill="#17171C">N</text></g><g><title>Rauchwarnmelder, 10-Jahres-Batterie</title><circle cx="610.3333333333333" cy="36" r="10" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><text x="610.3333333333333" y="39.5" text-anchor="middle" font-size="10" font-weight="600" fill="#17171C">R</text></g></g><rect x="641.3333333333333" y="14" width="304.66666666666663" height="160" fill="#FFFFFF" stroke="#17171C" stroke-width="1.5"/><rect x="657.3333333333333" y="4" width="34" height="11" fill="#FFFFFF"/><path d="M657.3333333333333,14 L657.3333333333333,48 A34,34 0 0 0 691.3333333333333,14" fill="none" stroke="#17171C" stroke-width="1" stroke-dasharray="2 2"/><text x="703.3333333333333" y="38" font-size="15" font-weight="600" fill="#17171C">Bad</text><g class="symbole" data-raum="bad"><g><title>Schuko-Steckdose, zweifach</title><path d="M782.6666666666665,174 A11,11 0 0 1 804.6666666666665,174 Z" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="793.6666666666665" y1="163" x2="793.6666666666665" y2="156" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="798.1666666666665" y1="154" x2="801.1666666666665" y2="149" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="803.1666666666665" y1="154" x2="806.1666666666665" y2="149" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g><g><title>Ausschalter</title><circle cx="641.3333333333333" cy="144" r="5.5" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="645.3333333333333" y1="140" x2="655.3333333333333" y2="132" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g><g><title>Wandauslass für Leuchte</title><circle cx="933.9999999999999" cy="74" r="10" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="926.9999999999999" y1="67" x2="940.9999999999999" y2="81" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="926.9999999999999" y1="81" x2="940.9999999999999" y2="67" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g><g><title>Deckenauslass für Leuchte</title><circle cx="793.6666666666665" cy="98.0" r="10" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="786.6666666666665" y1="91.0" x2="800.6666666666665" y2="105.0" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/><line x1="786.6666666666665" y1="105.0" x2="800.6666666666665" y2="91.0" stroke="#17171C" stroke-width="2" fill="#FFFFFF" stroke-linecap="round"/></g></g></svg></div>
+    <p class="ergebnis" lang="de">Erkannt: 13 Komponenten in 3 Räumen. Die Wechselschaltung im Schlafzimmer ergibt sich aus „an der Tür und am Bett schalten“.</p>
+    <p class="ergebnis" lang="en">Recognised: 13 components in 3 rooms. The two-way switch in the bedroom follows from “switch it at the door and at the bed”.</p>
+  </div>
+</div>
+
+<div class="wrap"><div class="schraffur"></div></div>
+
+<section class="wrap" id="problem">
+  <h2><span lang="de">Nach dem Termin fängt die Büroarbeit an</span><span lang="en">After the visit, the paperwork starts</span></h2>
+  <div class="text">
+    <p lang="de">Was im Gespräch schnell gesagt ist, kostet danach Zeit: Die Wünsche müssen aus den Notizen in Positionen übertragen, Material und Montage gerechnet und Pläne gezeichnet werden. Und oft ruft der Kunde am nächsten Tag an, weil er es doch anders möchte.</p>
+    <p lang="en">What is said quickly in a meeting takes time afterwards: the wishes have to be copied from the notes into line items, material and labour priced, plans drawn. And often the customer calls the next day because they want it differently after all.</p>
+  </div>
+  <div class="nacharbeit">
+    <div><b><span lang="de">Übertragen</span><span lang="en">Copy out</span></b><span lang="de">Notizen in Positionen je Raum</span><span lang="en">Notes into line items per room</span></div>
+    <div><b><span lang="de">Planen</span><span lang="en">Plan</span></b><span lang="de">Steckdosen, Schalter, Leuchten einzeichnen</span><span lang="en">Draw sockets, switches, lights</span></div>
+    <div><b><span lang="de">Rechnen</span><span lang="en">Price</span></b><span lang="de">Material, Montage, MwSt.</span><span lang="en">Material, labour, VAT</span></div>
+    <div><b><span lang="de">Ändern</span><span lang="en">Change</span></b><span lang="de">alles noch einmal, wenn der Kunde anruft</span><span lang="en">all of it again when the customer calls</span></div>
+  </div>
+</section>
+
+<div class="wrap"><div class="schraffur"></div></div>
+
+<section class="wrap" id="anleitung">
+  <h2><span lang="de">So funktioniert die App</span><span lang="en">How the app works</span></h2>
+  <p class="text" lang="de">Vier Schritte, alle auf einer Seite. Die Leiste oben in der App zeigt, wo du gerade bist.</p>
+  <p class="text" lang="en">Four steps on one page. The bar at the top of the app shows where you are. The interface is in German.</p>
+  <ol class="schritte">
+    <li>
+      <div class="was">
+        <h3><span lang="de">Notizen</span><span lang="en">Notes</span></h3>
+        <p lang="de">Schreib die Wünsche so auf, wie du sie im Gespräch notierst, oder sprich sie ein. Zum Ausprobieren gibt es zwei Beispiele. Ein Klick auf „Plan erstellen“, und die Notizen werden erkannt.</p>
+        <p lang="en">Write the wishes the way you would note them on site, or dictate them. Two examples are ready to try. Click “Plan erstellen” and the notes are recognised.</p>
+      </div>
+      <figure><img src="img/schritt-1-notizen.png" alt="Eingabe der Notizen mit Beispielen, Diktat und Einstellungen" loading="lazy" width="1020" height="287"><figcaption lang="de">Notizen tippen, einsprechen oder ein Beispiel laden.</figcaption><figcaption lang="en">Type, dictate or load an example.</figcaption></figure>
+    </li>
+    <li>
+      <div class="was">
+        <h3><span lang="de">Plan prüfen</span><span lang="en">Check the plan</span></h3>
+        <p lang="de">Der Plan zeigt jeden Raum mit seinen Symbolen. Mit − und + änderst du Anzahlen, unter „+ Raum“ kommen weitere Räume dazu. Die Prüfung weist auf Lücken hin, etwa einen fehlenden Rauchwarnmelder im Flur, und der Vorschlag lässt sich mit einem Klick übernehmen.</p>
+        <p lang="en">The plan shows every room with its symbols. Adjust counts with − and +, add rooms under “+ Raum”. The check points out gaps, such as a missing smoke alarm in the hallway, and the fix is one click.</p>
+      </div>
+      <figure><img src="img/schritt-2-pruefen.png" alt="Räume bearbeiten mit Plus und Minus, daneben die Prüfung mit dem Vorschlag Rauchmelder ergänzen" loading="lazy" width="1020" height="514"><figcaption lang="de">Je Raum anpassen, Hinweise der Prüfung übernehmen.</figcaption><figcaption lang="en">Edit per room, apply the suggested fixes.</figcaption></figure>
+    </li>
+    <li>
+      <div class="was">
+        <h3><span lang="de">Angebot</span><span lang="en">Quote</span></h3>
+        <p lang="de">Material und Montage je Position, Netto, MwSt. und Brutto. Kunde und Stundensatz lassen sich anpassen, das Angebot gibt es als PDF und CSV.</p>
+        <p lang="en">Material and labour per item, net, VAT and gross. Customer name and hourly rate are editable; the quote downloads as PDF or CSV.</p>
+      </div>
+      <figure><img src="img/schritt-3-angebot.png" alt="Angebotsvorschau mit Positionen, Mengen, Einzel- und Gesamtpreisen" loading="lazy" width="1028" height="1112"><figcaption lang="de">Vorschau des Angebots, Preise sind Beispielwerte.</figcaption><figcaption lang="en">Quote preview; prices are sample values.</figcaption></figure>
+    </li>
+    <li>
+      <div class="was">
+        <h3><span lang="de">Änderungen</span><span lang="en">Changes</span></h3>
+        <p lang="de">Schreib den Änderungswunsch so, wie der Kunde ihn sagt: „statt der Antennendose lieber eine zweite Netzwerkdose“. Daraus wird eine neue Version. Im Plan ist Neues grün und Entfallenes rot gestrichelt, die Tabelle zeigt vorher und nachher, das Angebot die Preisdifferenz. Die letzte Version lässt sich verwerfen.</p>
+        <p lang="en">Write the change the way the customer says it: “instead of the TV socket, a second network socket”. It becomes a new version. In the plan, new items are green and removed ones dashed red; the table shows before and after, the quote the price difference. The last version can be discarded.</p>
+      </div>
+      <figure><img src="img/schritt-4-aenderungen.png" alt="Tabelle der Änderungen und Liste der Versionen mit Preisen" loading="lazy" width="1040" height="378"><figcaption lang="de">Jede Änderung ist eine Version mit Preis.</figcaption><figcaption lang="en">Every change is a version with a price.</figcaption></figure>
+    </li>
+  </ol>
+</section>
+
+<div class="wrap"><div class="schraffur"></div></div>
+
+<section class="wrap" id="rollen">
+  <h2><span lang="de">Was das Sprachmodell darf und was der Code rechnet</span><span lang="en">What the language model may do and what the code calculates</span></h2>
+  <p class="text" lang="de">Ein Angebot muss stimmen. Deshalb übersetzt das Modell nur Sprache in Daten, und alles, was gerechnet oder geprüft wird, macht der Code.</p>
+  <p class="text" lang="en">A quote has to be right. So the model only turns language into data, and everything that is calculated or checked is done by code.</p>
+  <div class="fluss">
+    <div class="feld">
+      <h3><span lang="de">Notizen</span><span lang="en">Notes</span></h3>
+      <p lang="de">getippt oder eingesprochen, mit Kürzeln und Tippfehlern</p>
+      <p lang="en">typed or dictated, with abbreviations and typos</p>
+    </div>
+    <div class="pfeil" aria-hidden="true">→</div>
+    <div class="feld modell">
+      <h3><span lang="de">Sprachmodell</span><span lang="en">Language model</span></h3>
+      <ul lang="de"><li>gpt-4o-mini mit Structured Output</li><li>wählt nur Räume und Komponenten aus dem Katalog (<code>Pydantic</code>-Schema)</li><li>Unklares wird eine offene Frage, nicht geraten</li></ul>
+      <ul lang="en"><li>gpt-4o-mini with structured output</li><li>may only pick rooms and components from the catalogue (<code>Pydantic</code> schema)</li><li>anything unclear becomes an open question, never a guess</li></ul>
+    </div>
+    <div class="pfeil" aria-hidden="true">→</div>
+    <div class="feld">
+      <h3><span lang="de">Code</span><span lang="en">Code</span></h3>
+      <ul lang="de"><li>Preise, MwSt., Summen</li><li>Prüfregeln, z. B. Rauchwarnmelderpflicht, Wechselschaltung</li><li>Versionen und Unterschiede</li></ul>
+      <ul lang="en"><li>prices, VAT, totals</li><li>checks such as mandatory smoke alarms, two-way switching</li><li>versions and diffs</li></ul>
+    </div>
+  </div>
+  <p class="text" style="margin-top:1.2rem" lang="de">Ohne API-Schlüssel läuft die App mit Regeln weiter (Offline-Modus). Wie gut diese Regeln sind, zeigt die Auswertung.</p>
+  <p class="text" style="margin-top:1.2rem" lang="en">Without an API key the app falls back to rules (offline mode). The evaluation shows how good those rules are.</p>
+</section>
+
+<div class="wrap"><div class="schraffur"></div></div>
+
+<section class="wrap" id="auswertung">
+  <h2><span lang="de">Auswertung</span><span lang="en">Evaluation</span></h2>
+  <div class="text">
+    <p lang="de">37 von Hand annotierte Fälle. Eine Position zählt nur, wenn Raum, Komponente und Anzahl stimmen.</p>
+    <p lang="en">37 hand-annotated cases. An item only counts if room, component and count are all right.</p>
+  </div>
+  <div class="tabelle">
+  <table>
+    <thead><tr><th><span lang="de">Datensatz</span><span lang="en">Dataset</span></th><th><span lang="de">Fälle</span><span lang="en">Cases</span></th><th><span lang="de">Regeln (offline)</span><span lang="en">Rules (offline)</span></th></tr></thead>
+    <tbody>
+      <tr><td><span lang="de">Erkennung, dev (beim Schreiben der Regeln benutzt)</span><span lang="en">Recognition, dev (used while writing the rules)</span></td><td class="zahl">6</td><td class="zahl">F1 1,00, 6/6</td></tr>
+      <tr><td><span lang="de">Erkennung, holdout (vor den Regeln geschrieben)</span><span lang="en">Recognition, holdout (written before the rules)</span></td><td class="zahl">12</td><td class="zahl">F1 1,00, 12/12</td></tr>
+      <tr class="grenze"><td><span lang="de">Erkennung, stress (Kürzel, Tippfehler, indirekte Wünsche; nicht zum Abstimmen benutzt)</span><span lang="en">Recognition, stress (abbreviations, typos, indirect wishes; never used for tuning)</span></td><td class="zahl">8</td><td class="zahl"><b>F1 0,50, 1/8</b></td></tr>
+      <tr><td><span lang="de">Änderungswünsche, dev</span><span lang="en">Change requests, dev</span></td><td class="zahl">5</td><td class="zahl">5/5</td></tr>
+      <tr><td><span lang="de">Änderungswünsche, holdout</span><span lang="en">Change requests, holdout</span></td><td class="zahl">6</td><td class="zahl">6/6</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="text">
+    <p lang="de">Die 100 % sagen wenig: Holdout-Fälle und Regeln stammen von derselben Person und sind im selben ordentlichen Stil geschrieben. Die Stress-Fälle zeigen die Grenze. „SZ: 2x Doppel-SD“, „Kinderzimer“ oder „das gleiche wie im Schlafzimmer“ erkennen die Regeln nicht. Dafür ist das Sprachmodell da. Seine Auswertung mit denselben Fällen steht noch aus und wird hier eingetragen.</p>
+    <p lang="en">The 100% means little: the holdout cases and the rules come from the same person, written in the same tidy style. The stress cases show the limit. The rules miss “SZ: 2x Doppel-SD”, the typo “Kinderzimer” or “the same as in the bedroom”. That is what the language model is for. Its evaluation on the same cases is still to come and will be added here.</p>
+  </div>
+</section>
+
+<div class="wrap"><div class="schraffur"></div></div>
+
+<section class="wrap" id="grenzen">
+  <h2><span lang="de">Grenzen</span><span lang="en">Limitations</span></h2>
+  <ul class="grenzen" lang="de">
+    <li>Der Plan ist schematisch: Räume in Reihen, keine Maße. Steckdosen sitzen immer an der unteren Wand, Schalter an der linken.</li>
+    <li>Katalog und Preise sind Beispielwerte.</li>
+    <li>Die Prüfregeln sind eine kleine Auswahl. Sie ersetzen weder DIN 18015 noch die Fachkraft.</li>
+    <li>Die Testfälle sind wenige und selbst geschrieben, nicht aus echten Kundengesprächen.</li>
+  </ul>
+  <ul class="grenzen" lang="en">
+    <li>The plan is schematic: rooms in rows, no dimensions. Sockets always sit on the bottom wall, switches on the left.</li>
+    <li>Catalogue and prices are sample values.</li>
+    <li>The checks are a small selection. They replace neither DIN 18015 nor the electrician.</li>
+    <li>The test cases are few and self-written, not from real customer meetings.</li>
+  </ul>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p><a href="https://wunschplan.streamlit.app/">Live-App</a> | <a href="https://github.com/sayamrina/wunschplan">GitHub</a> | <a href="https://sayamrina.github.io/">Portfolio</a></p>
+      <p>Python, OpenAI API (Structured Output, Transkription), Pydantic, Streamlit, fpdf2. <span lang="de">Schrift</span><span lang="en">Typeface</span>: IBM Plex Sans.</p>
+    </div>
+    <p>This website was built by Amrina, with AI as a supporting tool for coding.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var html = document.documentElement;
+  function setLang(lang) {
+    html.dataset.lang = lang;
+    html.lang = lang;
+    document.querySelectorAll('[data-set-lang]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.setLang === lang)); });
+    try { localStorage.setItem('wunschplan-lang', lang); } catch (e) {}
+  }
+  var gespeichert = null;
+  try { gespeichert = localStorage.getItem('wunschplan-lang'); } catch (e) {}
+  if (gespeichert === 'en' || gespeichert === 'de') setLang(gespeichert);
+  document.querySelectorAll('[data-set-lang]').forEach(function (b) { b.addEventListener('click', function () { setLang(b.dataset.setLang); }); });
+
+  // Vorführung: jeder Satz der Notizen wird markiert, dann erscheinen die Symbole seines Raums im Plan.
+  var ruhig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var saetze = Array.prototype.slice.call(document.querySelectorAll('#zettel li'));
+  var timer = [];
+  function gruppe(raum) { return document.querySelector('.plan .symbole[data-raum="' + raum + '"]'); }
+  function abspielen() {
+    timer.forEach(clearTimeout); timer = [];
+    saetze.forEach(function (li) { li.classList.remove('an'); var g = gruppe(li.dataset.raum); if (g) g.classList.remove('an'); });
+    saetze.forEach(function (li, i) {
+      timer.push(setTimeout(function () {
+        saetze.forEach(function (x) { x.classList.remove('an'); });
+        li.classList.add('an');
+        var g = gruppe(li.dataset.raum); if (g) g.classList.add('an');
+      }, 600 + i * 1700));
+    });
+    timer.push(setTimeout(function () { saetze.forEach(function (x) { x.classList.remove('an'); }); }, 600 + saetze.length * 1700));
+  }
+  if (!ruhig) {
+    html.classList.add('js');
+    var vf = document.querySelector('.vorfuehrung');
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (e) { if (e[0].isIntersecting) { abspielen(); io.disconnect(); } }, { threshold: 0.4 });
+      io.observe(vf);
+    } else { abspielen(); }
+    document.getElementById('nochmal').addEventListener('click', abspielen);
+  } else {
+    document.getElementById('nochmal').hidden = true;
+  }
+})();
+</script>
+</body>
+</html>

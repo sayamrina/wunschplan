@@ -1,6 +1,6 @@
 # Wunschplan
 
-**KI-Projekt 2026** | [Live-App](https://wunschplan.streamlit.app/) | [Portfolio](https://sayamrina.github.io/)
+**KI-Projekt 2026** | [Live-App](https://wunschplan.streamlit.app/) | [Projektseite](https://sayamrina.github.io/wunschplan/) | [Portfolio](https://sayamrina.github.io/)
 
 Im Kundengespräch notiert die Elektrofachkraft, was der Kunde in welchem Raum haben möchte: „links und rechts vom Bett je eine Doppelsteckdose, Licht an der Tür und am Bett schaltbar“. Wunschplan macht daraus in einem Schritt **Positionen**, einen **schematischen Installationsplan** und ein **Angebot**. Ruft der Kunde später an und möchte etwas ändern („statt der Antennendose lieber eine zweite Netzwerkdose“), wird der Wunsch als neue Version eingetragen; Plan und Angebot zeigen, was sich geändert hat und was es kostet.
 
@@ -62,7 +62,7 @@ pip install pytest ruff
 ruff check . && pytest
 ```
 
-Die 19 Tests prüfen Erkennung und Änderungen gegen dev und holdout, das Angebot (Material, Montage, MwSt., PDF), die Prüfregeln mit ihren Vorschlägen, den Plan mit Markierungen und die App als Ganzes (Streamlit AppTest: Beispiele, Plan erstellen, Vorschlag übernehmen, − und +, Raum anlegen, Änderung eintragen, Version verwerfen).
+Die 20 Tests prüfen Erkennung und Änderungen gegen dev und holdout, das Angebot (Material, Montage, MwSt., PDF), die Prüfregeln mit ihren Vorschlägen, den Plan mit Markierungen und die App als Ganzes (Streamlit AppTest: Anleitung, Beispiele, Plan erstellen, Vorschlag übernehmen, − und +, Raum anlegen, Änderung eintragen, Version verwerfen).
 
 ## Aufbau
 

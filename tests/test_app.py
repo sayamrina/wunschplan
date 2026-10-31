@@ -58,3 +58,10 @@ def test_raum_anlegen():
     knopf(at, "Raum anlegen").click().run()
     assert not at.exception
     assert any("Garage" in t.label for t in at.tabs)
+
+
+def test_anleitung_und_projektseite():
+    at = starten()
+    knopf(at, "So funktioniert die App").click().run()
+    assert not at.exception
+    assert any("Wer macht was?" in m.value for m in at.markdown)
