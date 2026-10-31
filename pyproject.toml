@@ -12,3 +12,7 @@ select = ["E", "F", "I", "B", "UP"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.ruff.lint.per-file-ignores]
+# HTML- und CSS-Vorlagen in der Oberfläche
+"streamlit_app.py" = ["E501"]

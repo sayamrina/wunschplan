@@ -70,6 +70,12 @@ def anwenden(plan: list[Position], text: str) -> list[Position]:
     return zusammenfassen(plan + neu)
 
 
+def anpassen(plan: list[Position], raum: str, komp: str, delta: int) -> list[Position]:
+    """Anzahl einer Komponente im Raum um delta ändern (von Hand oder per Vorschlag aus der Prüfung)."""
+    jetzt = sum(p.anzahl for p in plan if p.raum == raum and p.komponente == komp)
+    return _setzen(plan, raum, komp, min(jetzt + delta, 50))
+
+
 def unterschied(vorher: list[Position], nachher: list[Position]) -> list[dict]:
     """Je (Raum, Komponente) die Anzahl vorher und nachher, nur wo sich etwas geändert hat."""
     def zaehlen(plan):

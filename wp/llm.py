@@ -51,3 +51,11 @@ def extrahieren(text: str) -> Plan:
 def aendern(plan: list[Position], text: str) -> list[Position]:
     alt = Plan(positionen=plan).model_dump_json(include={"positionen"})
     return zusammenfassen(_parse(AENDERN.format(plan=alt, text=text)).positionen)
+
+
+def transkribieren(audio: bytes, dateiname: str = "notiz.wav") -> str:
+    """Gesprochene Notizen zu Text (Deutsch)."""
+    from openai import OpenAI
+
+    client = OpenAI(timeout=60, max_retries=1)
+    return client.audio.transcriptions.create(model="gpt-4o-mini-transcribe", file=(dateiname, audio), language="de").text

@@ -6,14 +6,16 @@ Im Kundengespräch notiert die Elektrofachkraft, was der Kunde in welchem Raum h
 
 *English: turns an electrician's notes from a customer meeting into line items, a schematic installation plan and a quote, and applies later change requests as new versions with a visible diff. The interface is in German.*
 
+![Startseite: Notizen eingeben, Beispiel laden oder einsprechen](docs/img/start.png)
+
 ![Version 2 nach einem Änderungswunsch: neue Netzwerkdose grün, entfallene Antennendose rot gestrichelt](docs/img/plan-version-2.png)
 
 ## Ablauf
 
-1. **Kundenwünsche erkennen.** Ein Sprachmodell (gpt-4o-mini) liest die Notizen und gibt strukturierte Positionen zurück. Es darf nur Räume und Komponenten aus dem Katalog wählen: das Pydantic-Schema wird als Structured Output erzwungen, freie Bezeichnungen sind nicht möglich. Unklares (fehlender Raum, fehlende Anzahl) landet als Frage in „Offene Fragen“, statt geraten zu werden. Ohne API-Schlüssel arbeitet die App mit Regeln (Offline-Modus).
-2. **Prüfen und korrigieren.** Die Fachkraft sieht alle Positionen in einer Tabelle und kann sie direkt ändern. Der Plan gehört ihr, nicht dem Modell.
-3. **Plausibilität im Code.** Regeln wie „Rauchwarnmelder in Schlafräumen, Kinderzimmern und Fluren“, „Wechselschaltung braucht zwei Schalter“, „Herdanschluss auf eigenem Stromkreis“ oder „Steckdose im Bad: Schutzbereiche nach DIN VDE 0100-701“ prüft der Code, nicht das Modell. Es sind Hinweise, keine Normprüfung.
-4. **Angebot.** Material und Montage (Minuten × Stundensatz) je Komponente, Netto, MwSt. und Brutto werden im Code gerechnet; das Modell nennt keine Preise. Export als CSV.
+1. **Kundenwünsche erfassen und erkennen.** Notizen tippen oder einsprechen (Diktat auf Deutsch, umgewandelt mit gpt-4o-mini-transcribe). Ein Sprachmodell (gpt-4o-mini) liest die Notizen und gibt strukturierte Positionen zurück. Es darf nur Räume und Komponenten aus dem Katalog wählen: das Pydantic-Schema wird als Structured Output erzwungen, freie Bezeichnungen sind nicht möglich. Unklares (fehlender Raum, fehlende Anzahl) landet als Frage in „Offene Fragen“, statt geraten zu werden. Ohne API-Schlüssel arbeitet die App mit Regeln (Offline-Modus).
+2. **Prüfen und korrigieren.** Je Raum lassen sich Komponenten mit − und + anpassen, ergänzen oder ganze Räume anlegen. Der Plan gehört der Fachkraft, nicht dem Modell.
+3. **Plausibilität im Code.** Regeln wie „Rauchwarnmelder in Schlafräumen, Kinderzimmern und Fluren“, „Wechselschaltung braucht zwei Schalter“, „Herdanschluss auf eigenem Stromkreis“ oder „Steckdose im Bad: Schutzbereiche nach DIN VDE 0100-701“ prüft der Code, nicht das Modell. Wo es passt, gibt es einen Vorschlag mit einem Klick, etwa „Rauchmelder ergänzen“ oder „Durch Außensteckdosen ersetzen“. Es sind Hinweise, keine Normprüfung.
+4. **Angebot.** Material und Montage (Minuten × Stundensatz) je Komponente, Netto, MwSt. und Brutto werden im Code gerechnet; das Modell nennt keine Preise. Vorschau als Dokument, Export als PDF und CSV.
 5. **Änderungswünsche als Versionen.** Jede Änderung ergibt eine neue Version mit Unterschied (vorher, nachher), Mehr- oder Minderkosten und Markierung im Plan. Die letzte Version lässt sich verwerfen.
 
 ## Auswertung
@@ -39,7 +41,7 @@ Die Ergebnisse des Modells sind hier noch nicht eingetragen.
 
 ## Grenzen
 
-- Der Plan ist schematisch: ein Kasten je Raum, keine Maße und keine Lage an der Wand. Der echte Grundriss entsteht in der Planungssoftware.
+- Der Plan ist schematisch: Räume in Reihen nebeneinander, keine Maße; Steckdosen sitzen immer an der unteren Wand, Schalter an der linken. Der echte Grundriss entsteht in der Planungssoftware.
 - Katalog und Preise sind Beispielwerte.
 - Die Prüfregeln sind eine kleine Auswahl und ersetzen weder DIN 18015 noch die Fachkraft.
 - Die Datensätze sind klein (37 Fälle) und selbst geschrieben, nicht aus echten Kundengesprächen.
@@ -60,7 +62,7 @@ pip install pytest ruff
 ruff check . && pytest
 ```
 
-Die 15 Tests prüfen Erkennung und Änderungen gegen dev und holdout, das Angebot (Material, Montage, MwSt.), die Prüfregeln, den Plan mit Markierungen und die App als Ganzes (Streamlit AppTest: Plan erstellen, Änderung eintragen, Version verwerfen).
+Die 19 Tests prüfen Erkennung und Änderungen gegen dev und holdout, das Angebot (Material, Montage, MwSt., PDF), die Prüfregeln mit ihren Vorschlägen, den Plan mit Markierungen und die App als Ganzes (Streamlit AppTest: Beispiele, Plan erstellen, Vorschlag übernehmen, − und +, Raum anlegen, Änderung eintragen, Version verwerfen).
 
 ## Aufbau
 
@@ -71,6 +73,8 @@ Die 15 Tests prüfen Erkennung und Änderungen gegen dev und holdout, das Angebo
 | [`wp/llm.py`](wp/llm.py) | Erkennung und Änderungen mit Structured Output |
 | [`wp/regeln.py`](wp/regeln.py), [`wp/aenderung.py`](wp/aenderung.py) | Offline-Modus mit Regeln, Unterschied zwischen Versionen |
 | [`wp/pruefung.py`](wp/pruefung.py), [`wp/angebot.py`](wp/angebot.py) | Plausibilität und Angebot im Code |
-| [`wp/grundriss.py`](wp/grundriss.py) | Plan als SVG, Symbole angelehnt an EN 60617 |
+| [`wp/grundriss.py`](wp/grundriss.py) | Plan als SVG im Stil einer Bauzeichnung, Symbole angelehnt an EN 60617 |
+
+Schrift: IBM Plex Sans (SIL Open Font License, [`assets/fonts/OFL.txt`](assets/fonts/OFL.txt)).
 
 This app was built by Amrina, with AI as a supporting tool for coding.

@@ -56,7 +56,7 @@ def test_euro_format():
 
 
 def test_pruefung_rauchmelder_und_wechselschaltung():
-    texte = [t for _, t in pruefung.pruefen([P("schlafzimmer", "wechselschalter"), P("schlafzimmer", "deckenauslass")])]
+    texte = [t for _, t, _ in pruefung.pruefen([P("schlafzimmer", "wechselschalter"), P("schlafzimmer", "deckenauslass")])]
     assert any("Rauchwarnmelder" in t for t in texte)
     assert any("zwei Wechselschalter" in t for t in texte)
 
@@ -64,3 +64,17 @@ def test_pruefung_rauchmelder_und_wechselschaltung():
 def test_grundriss_markiert_entfallene_komponente():
     svg = grundriss.zeichnen([P("flur", "taster", 2)], vorher=[P("flur", "wechselschalter", 2)])
     assert svg.startswith("<svg") and grundriss.WEG in svg and grundriss.NEU in svg
+
+
+def test_angebot_pdf_ist_pdf():
+    b = angebot.pdf([P("kueche", "herdanschluss"), P("flur", "rauchmelder")], 68.0, "Familie Beispiel", "WP-1", "01.11.2026")
+    assert b[:4] == b"%PDF" and len(b) > 5000
+
+
+def test_vorschlag_ersetzt_innensteckdosen_aussen():
+    hinweise = pruefung.pruefen([P("garage", "steckdose", 2), P("garage", "deckenauslass"), P("garage", "ausschalter")])
+    _, _, (_, schritte) = next(h for h in hinweise if h[2] and "Außensteckdosen" in h[2][0])
+    plan = [P("garage", "steckdose", 2)]
+    for raum, komp, delta in schritte:
+        plan = aenderung.anpassen(plan, raum, komp, delta)
+    assert [(p.komponente, p.anzahl) for p in plan] == [("aussensteckdose", 2)]
