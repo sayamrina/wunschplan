@@ -1,6 +1,6 @@
 # Wunschplan
 
-**KI-Projekt 2026** | [Portfolio](https://sayamrina.github.io/)
+**KI-Projekt 2026** | [Live-App](https://wunschplan.streamlit.app/) | [Portfolio](https://sayamrina.github.io/)
 
 Im Kundengespräch notiert die Elektrofachkraft, was der Kunde in welchem Raum haben möchte: „links und rechts vom Bett je eine Doppelsteckdose, Licht an der Tür und am Bett schaltbar“. Wunschplan macht daraus in einem Schritt **Positionen**, einen **schematischen Installationsplan** und ein **Angebot**. Ruft der Kunde später an und möchte etwas ändern („statt der Antennendose lieber eine zweite Netzwerkdose“), wird der Wunsch als neue Version eingetragen; Plan und Angebot zeigen, was sich geändert hat und was es kostet.
 
